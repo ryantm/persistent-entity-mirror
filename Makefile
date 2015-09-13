@@ -7,7 +7,7 @@ NIXSHELL_COMMAND=nix-shell \
     --option extra-binary-caches https://cache.nixos.org \
     --option extra-binary-caches http://hydra.cryp.to \
     --fallback \
-    -p haskellPackages.stack haskellPackages.ghc
+    -p haskellPackages.stack haskellPackages.ghc haskellPackages.hspec
 
 shell :
 	$(NIXSHELL_COMMAND)
