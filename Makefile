@@ -6,8 +6,7 @@ NIXSHELL_COMMAND=nix-shell \
     --show-trace \
     --option extra-binary-caches https://hydra.nixos.org \
     --option extra-binary-caches https://cache.nixos.org \
-    --fallback \
-    -p haskellPackages.stack haskellPackages.ghc haskellPackages.hspec
+    --fallback
 
 shell :
 	$(NIXSHELL_COMMAND)
