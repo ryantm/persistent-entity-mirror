@@ -1,11 +1,11 @@
+NIX_PATH=nixpkgs=https://nixos.org/channels/nixpkgs-unstable/nixexprs.tar.xz
 NIXSHELL_COMMAND=nix-shell \
     --pure \
     -j 4 \
+    -I $(NIX_PATH) \
     --show-trace \
-    -I nixpkgs=/home/ryantm/p/nixpkgs \
     --option extra-binary-caches https://hydra.nixos.org \
     --option extra-binary-caches https://cache.nixos.org \
-    --option extra-binary-caches http://hydra.cryp.to \
     --fallback \
     -p haskellPackages.stack haskellPackages.ghc haskellPackages.hspec
 
