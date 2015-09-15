@@ -2,9 +2,15 @@
 
 module PersistentEntityMirror.MySQLSpec where
 
+import Control.Monad (forM_)
+import Data.Maybe
+import Data.Text as Text
+import Database.MySQL.Simple
+import Database.MySQL.Simple.Result (Result(..))
+
+
 import Test.Hspec
 
-import Database.MySQL.Simple
 
 
 -- describe GLOBAL_VARIABLES;
@@ -16,9 +22,11 @@ import Database.MySQL.Simple
 -- +----------------+---------------+------+-----+---------+-------+
 -- 2 rows in set (0.00 sec)
 
+alwaysFail = 1 `shouldBe` 2
+
 spec :: Spec
 spec =
-  describe "mysql service dependency" (
+  describe "mysql service dependency" ( do
     it "should be running" (
         do
           conn <- connect defaultConnectInfo
@@ -26,5 +34,16 @@ spec =
           case result of
             [] -> do
               putStrLn "database returned no results"
-              1 `shouldBe` 2 -- always fail
-            x:_ -> (x :: Only Int) `shouldBe` Only 4))
+              alwaysFail
+            x:_ -> (x :: Only Int) `shouldBe` Only 4)
+    it "should have a GLOBAL_VARIABLES table in the information_schema db" (
+        do
+          conn <- connect defaultConnectInfo {
+            connectDatabase = "information_schema" }
+          (a,b,c,d,e,f):_ <- query_ conn "describe GLOBAL_VARIABLES"
+          (a :: Maybe Text) `shouldBe` Just "VARIABLE_NAME"
+          (b :: Maybe Text) `shouldBe` Just "varchar(64)"
+          (c :: Maybe Text) `shouldBe` Just "NO"
+          (d :: Maybe Text) `shouldBe` Just ""
+          (e :: Maybe Text) `shouldBe` Just ""
+          (f :: Maybe Text) `shouldBe` Just ""))

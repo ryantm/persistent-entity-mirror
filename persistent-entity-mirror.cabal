@@ -31,6 +31,7 @@ test-suite persistent-entity-mirror-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
+                     , text
                      , persistent-entity-mirror
                      , hspec
                      , mysql-simple
