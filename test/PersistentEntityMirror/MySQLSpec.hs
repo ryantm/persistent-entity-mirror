@@ -11,6 +11,7 @@ import Database.MySQL.Simple.Result (Result(..))
 
 import Test.Hspec
 
+import Database.PersistentEntityMirror.MySQL
 
 
 -- describe GLOBAL_VARIABLES;
@@ -25,7 +26,7 @@ import Test.Hspec
 alwaysFail = 1 `shouldBe` 2
 
 spec :: Spec
-spec =
+spec = do
   describe "mysql service dependency" ( do
     it "should be running" (
         do
@@ -40,10 +41,10 @@ spec =
         do
           conn <- connect defaultConnectInfo {
             connectDatabase = "information_schema" }
-          (a,b,c,d,e,f):_ <- query_ conn "describe GLOBAL_VARIABLES"
-          (a :: Maybe Text) `shouldBe` Just "VARIABLE_NAME"
-          (b :: Maybe Text) `shouldBe` Just "varchar(64)"
-          (c :: Maybe Text) `shouldBe` Just "NO"
-          (d :: Maybe Text) `shouldBe` Just ""
-          (e :: Maybe Text) `shouldBe` Just ""
-          (f :: Maybe Text) `shouldBe` Just ""))
+          (a,b,c,d,e,f):_ <- (query_ conn "describe GLOBAL_VARIABLES") :: IO [MySQLDescribe]
+          a `shouldBe` Just "VARIABLE_NAME"
+          b `shouldBe` Just "varchar(64)"
+          c `shouldBe` Just "NO"
+          d `shouldBe` Just ""
+          e `shouldBe` Just ""
+          f `shouldBe` Just ""))
