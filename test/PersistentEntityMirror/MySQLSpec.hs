@@ -2,12 +2,8 @@
 
 module PersistentEntityMirror.MySQLSpec where
 
-import Control.Monad (forM_)
 import Data.Maybe
-import Data.Text as Text
 import Database.MySQL.Simple
-import Database.MySQL.Simple.Result (Result(..))
-
 
 import Test.Hspec
 
@@ -23,28 +19,35 @@ import Database.PersistentEntityMirror.MySQL
 -- +----------------+---------------+------+-----+---------+-------+
 -- 2 rows in set (0.00 sec)
 
-alwaysFail = 1 `shouldBe` 2
+
+globalVariablesDescription :: [MySQLDescribe]
+globalVariablesDescription = [
+  ( Just "VARIABLE_NAME"
+  , Just "varchar(64)"
+  , Just "NO"
+  , Just ""
+  , Just ""
+  , Just ""),
+  ( Just "VARIABLE_VALUE"
+  , Just "varchar(1024)"
+  , Just "YES"
+  , Just ""
+  , Nothing
+  , Just "")]
 
 spec :: Spec
 spec = do
   describe "mysql service dependency" ( do
-    it "should be running" (
-        do
-          conn <- connect defaultConnectInfo
-          result <- query_ conn "select 2 + 2"
-          case result of
-            [] -> do
-              putStrLn "database returned no results"
-              alwaysFail
-            x:_ -> (x :: Only Int) `shouldBe` Only 4)
-    it "should have a GLOBAL_VARIABLES table in the information_schema db" (
-        do
-          conn <- connect defaultConnectInfo {
-            connectDatabase = "information_schema" }
-          (a,b,c,d,e,f):_ <- (query_ conn "describe GLOBAL_VARIABLES") :: IO [MySQLDescribe]
-          a `shouldBe` Just "VARIABLE_NAME"
-          b `shouldBe` Just "varchar(64)"
-          c `shouldBe` Just "NO"
-          d `shouldBe` Just ""
-          e `shouldBe` Just ""
-          f `shouldBe` Just ""))
+    it "should be running" ( do
+      conn <- connect defaultConnectInfo
+      x:_ <- query_ conn "select 2 + 2" :: IO [Only Int]
+      x `shouldBe` Only 4)
+    it "should have a GLOBAL_VARIABLES table in the information_schema db" ( do
+      conn <- connect defaultConnectInfo {
+        connectDatabase = "information_schema" }
+      result <- (query_ conn "describe GLOBAL_VARIABLES") :: IO [MySQLDescribe]
+      result `shouldBe` globalVariablesDescription))
+  describe "descriptionOf" ( do
+    it "should return a list of descriptions" ( do
+      result <- descriptionOf "information_schema" "GLOBAL_VARIABLES"
+      result `shouldBe` globalVariablesDescription))
