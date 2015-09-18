@@ -2,6 +2,7 @@
 
 module PersistentEntityMirror.MySQLSpec where
 
+import Data.HashMap.Strict ((!))
 import Data.Maybe
 import Database.MySQL.Simple
 
@@ -47,7 +48,13 @@ spec = do
         connectDatabase = "information_schema" }
       result <- (query_ conn "describe GLOBAL_VARIABLES") :: IO [MySQLDescribe]
       result `shouldBe` globalVariablesDescription))
-  describe "descriptionOf" ( do
+  describe "descriptionOfTable" ( do
     it "should return a list of descriptions" ( do
-      result <- descriptionOf "information_schema" "GLOBAL_VARIABLES"
+      conn <- connect defaultConnectInfo {
+        connectDatabase = "information_schema" }
+      result <- descriptionOfTable conn "GLOBAL_VARIABLES"
       result `shouldBe` globalVariablesDescription))
+  describe "descriptionOfDatabase" (do
+    it "should return a hashmap with keys as table names and values as lists of descriptions" (do
+      result <- descriptionOfDatabase "information_schema"
+      result ! "GLOBAL_VARIABLES" `shouldBe` globalVariablesDescription))
