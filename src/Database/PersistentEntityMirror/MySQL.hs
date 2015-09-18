@@ -23,10 +23,10 @@ type MySQLDescribe = (
 -- Warning: The caller is responsbile for making the table and
 -- database be properly formatted, that is, this function does not
 -- protect against SQL injection.
-descriptionOf :: String ->  -- ^ table name
-                 String ->  -- ^ database name
+descriptionOf :: String ->  -- ^ database name
+                 String ->  -- ^ table name
                  IO [MySQLDescribe]
-descriptionOf table database = do
+descriptionOf database table = do
   conn <- connect defaultConnectInfo {
-    connectDatabase = table }
-  query conn "describe ?" (Only (Plain (stringUtf8 database)))
+    connectDatabase = database }
+  query conn "describe ?" (Only (Plain (stringUtf8 table)))
