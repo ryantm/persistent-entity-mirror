@@ -45,9 +45,9 @@ descriptionOfDatabase database = do
 -- database
 tablesOfDatabase :: Connection -> -- ^ a mysql-simple connection
                     IO [Text] -- ^ a list of table names
-tablesOfDatabase conn = do
-  result <- query_ conn "show tables"
-  return (fmap fromOnly result)
+tablesOfDatabase conn =
+  (fmap . fmap) fromOnly (query_ conn "show tables")
+
 
 
 -- | Given a table name and a database connection it returns a list of
