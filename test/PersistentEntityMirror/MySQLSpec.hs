@@ -58,3 +58,9 @@ spec = do
     it "should return a hashmap with keys as table names and values as lists of descriptions" (do
       result <- descriptionOfDatabase "information_schema"
       result ! "GLOBAL_VARIABLES" `shouldBe` globalVariablesDescription))
+  describe "tablesOfDatabase" (do
+    specify "the information_schema should include GLOBAL_VARIABLES" (do
+      conn <- connect defaultConnectInfo {
+        connectDatabase = "information_schema" }
+      result <- tablesOfDatabase conn
+      result `shouldSatisfy` any (== "GLOBAL_VARIABLES")))
