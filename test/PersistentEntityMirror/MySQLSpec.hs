@@ -4,7 +4,9 @@ module PersistentEntityMirror.MySQLSpec where
 
 import Data.HashMap.Strict ((!))
 import Data.Maybe
+import Data.Text hiding (any)
 import Database.MySQL.Simple
+
 
 import Test.Hspec
 
@@ -35,6 +37,13 @@ globalVariablesDescription = [
   , Just ""
   , Nothing
   , Just "")]
+
+
+globalVariableEntityTemplate :: Text
+globalVariableEntityTemplate =
+  "GlobalVariable\n\
+  \  variableName Text sqltype=varchar(64)\n\
+  \  variableValue Text sqltype=varchar(1024) Maybe default=Nothing"
 
 {-
 MariaDB [information_schema]> describe schemata;
@@ -114,3 +123,7 @@ spec = do
         connectDatabase = "information_schema" }
       result <- tablesOfDatabase conn
       result `shouldSatisfy` any (== "GLOBAL_VARIABLES")))
+  describe "descriptionToEntityTemplate" (do
+    it "should create an entity template" (do
+      descriptionToEntityTemplate "GLOBAL_VARIABLES" globalVariablesDescription
+        `shouldBe` globalVariableEntityTemplate))

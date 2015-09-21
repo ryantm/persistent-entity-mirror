@@ -61,3 +61,10 @@ descriptionOfTable :: Connection ->  -- ^ a mysql-simple connection
                       IO [MySQLDescribe]
 descriptionOfTable conn table = do
   query conn "describe ?" (Only (Plain (byteString (encodeUtf8 table))))
+
+
+
+descriptionToEntityTemplate :: Text -> -- ^ table name
+                               [MySQLDescribe] -> -- ^ description of table fields
+                               Text
+descriptionToEntityTemplate = undefined
