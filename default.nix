@@ -1,4 +1,4 @@
-{ stdenv, mkDerivation, base, ghc, stack, hspec, mysql-simple
+{ stdenv, mkDerivation, base, ghc, stack, cabal-install, hspec, mysql-simple
 }:
 
 mkDerivation {
@@ -7,9 +7,9 @@ mkDerivation {
   src = ./.;
   isLibrary = true;
   isExecutable = false;
-  buildTools = [ ghc stack ];
+  buildTools = [ ghc stack cabal-install ];
   buildDepends = [
-    base
+    base mysql-simple
   ];
   testDepends = [
     base hspec mysql-simple
