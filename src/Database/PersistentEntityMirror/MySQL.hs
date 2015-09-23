@@ -4,8 +4,11 @@ module Database.PersistentEntityMirror.MySQL where
 
 import qualified Data.ByteString as BS
 import           Data.ByteString.Builder
-import           Data.HashMap.Strict as HM
-import           Data.Text
+import           Data.HashMap.Strict (HashMap)
+import qualified Data.HashMap.Strict as HM
+import           Data.Maybe
+import           Data.Text (Text)
+import qualified Data.Text as T
 import           Data.Text.Encoding (encodeUtf8)
 import           Database.MySQL.Simple
 import           Database.MySQL.Simple.Param
@@ -20,6 +23,9 @@ type MySQLDescribe = (
   , Maybe Text
   )
 
+fieldName :: MySQLDescribe -> Text
+fieldName (Just name,_,_,_,_,_) = name
+
 
 type DatabaseDescription = HM.HashMap Text [MySQLDescribe]
 
@@ -33,7 +39,7 @@ descriptionOfDatabase :: Text -> -- ^ a database name
                          IO DatabaseDescription
 descriptionOfDatabase database = do
   conn <- connect defaultConnectInfo {
-    connectDatabase = unpack database }
+    connectDatabase = T.unpack database }
   tables <- tablesOfDatabase conn
   keyValues <- mapM (\ table -> do
     description <- descriptionOfTable conn table
@@ -64,7 +70,23 @@ descriptionOfTable conn table = do
 
 
 
+  -- "GlobalVariable\n\
+  -- \  variableName Text sqltype=varchar(64)\n\
+  -- \  variableValue Text sqltype=varchar(1024) Maybe default=Nothing"
+
+tableNameMapping :: Text -> Text
+tableNameMapping "GLOBAL_VARIABLES" = "GlobalVariable"
+
+fieldNameMapping :: Text -> Text
+fieldNameMapping "VARIABLE_NAME" = "variableName"
+fieldNameMapping "VARIABLE_VALUE" = "variableValue"
+
 descriptionToEntityTemplate :: Text -> -- ^ table name
                                [MySQLDescribe] -> -- ^ description of table fields
                                Text
-descriptionToEntityTemplate = undefined
+descriptionToEntityTemplate tablename rows =
+  T.unlines ([ tableNameMapping tablename ] ++ map rowToEntityField rows)
+  where
+    rowToEntityField :: MySQLDescribe -> Text
+    rowToEntityField (name, fieldType, null, key, fieldDefault, extra) =
+      "  " `T.append` fieldNameMapping (fromJust name)
