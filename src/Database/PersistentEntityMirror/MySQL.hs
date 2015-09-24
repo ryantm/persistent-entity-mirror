@@ -81,6 +81,14 @@ fieldNameMapping :: Text -> Text
 fieldNameMapping "VARIABLE_NAME" = "variableName"
 fieldNameMapping "VARIABLE_VALUE" = "variableValue"
 
+fieldTypeMapping :: Text ->  Text
+fieldTypeMapping "varchar(64)" = "Text sqltype=varchar(64)"
+fieldTypeMapping "varchar(1024)" = "Text sqltype=varchar(1024)"
+
+nullMapping :: Text -> Maybe Text -> [Text]
+nullMapping "YES" Nothing = ["Maybe default=Nothing"]
+nullMapping "NO" _ = []
+
 descriptionToEntityTemplate :: Text -> -- ^ table name
                                [MySQLDescribe] -> -- ^ description of table fields
                                Text
@@ -88,5 +96,9 @@ descriptionToEntityTemplate tablename rows =
   T.unlines ([ tableNameMapping tablename ] ++ map rowToEntityField rows)
   where
     rowToEntityField :: MySQLDescribe -> Text
-    rowToEntityField (name, fieldType, null, key, fieldDefault, extra) =
-      "  " `T.append` fieldNameMapping (fromJust name)
+    rowToEntityField
+      (Just name, Just fieldType, Just null, key, fieldDefault, extra) =
+      "  " `T.append` T.unwords ([
+          fieldNameMapping name
+        , fieldTypeMapping fieldType
+        ] ++ nullMapping null fieldDefault)

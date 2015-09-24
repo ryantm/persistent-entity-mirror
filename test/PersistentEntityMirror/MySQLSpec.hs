@@ -43,7 +43,7 @@ globalVariableEntityTemplate :: Text
 globalVariableEntityTemplate =
   "GlobalVariable\n\
   \  variableName Text sqltype=varchar(64)\n\
-  \  variableValue Text sqltype=varchar(1024) Maybe default=Nothing"
+  \  variableValue Text sqltype=varchar(1024) Maybe default=Nothing\n"
 
 {-
 MariaDB [information_schema]> describe schemata;
