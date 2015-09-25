@@ -75,7 +75,7 @@ descriptionOfTable conn table = do
   -- \  variableValue Text sqltype=varchar(1024) Maybe default=Nothing"
 
 tableNameMapping :: Text -> Text
-tableNameMapping "GLOBAL_VARIABLES" = "GlobalVariable"
+tableNameMapping "GLOBAL_VARIABLES" = "GlobalVariable sql=GLOBAL_VARIABLES"
 
 fieldNameMapping :: Text -> Text
 fieldNameMapping "VARIABLE_NAME" = "variableName"
