@@ -41,7 +41,7 @@ globalVariablesDescription = [
 
 globalVariableEntityTemplate :: Text
 globalVariableEntityTemplate =
-  "GlobalVariable\n\
+  "GlobalVariable sql=GLOBAL_VARIABLES\n\
   \  variableName Text sqltype=varchar(64)\n\
   \  variableValue Text sqltype=varchar(1024) Maybe default=Nothing\n"
 
