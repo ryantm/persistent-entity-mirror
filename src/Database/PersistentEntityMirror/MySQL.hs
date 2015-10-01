@@ -76,6 +76,7 @@ descriptionOfTable conn table = do
 
 tableNameMapping :: Text -> Text
 tableNameMapping "GLOBAL_VARIABLES" = "GlobalVariable sql=GLOBAL_VARIABLES"
+tableNameMapping "STATISTICS" = "Statistics sql=STATISTICS"
 
 fieldNameMapping :: Text -> Text
 fieldNameMapping "VARIABLE_NAME" = "variableName"
