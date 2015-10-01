@@ -79,8 +79,9 @@ tableNameMapping "GLOBAL_VARIABLES" = "GlobalVariable sql=GLOBAL_VARIABLES"
 tableNameMapping "STATISTICS" = "Statistics sql=STATISTICS"
 
 fieldNameMapping :: Text -> Text
-fieldNameMapping "VARIABLE_NAME" = "variableName"
-fieldNameMapping "VARIABLE_VALUE" = "variableValue"
+fieldNameMapping t =
+  let first:rest = T.splitOn "_" t in
+  T.concat ([T.toLower first] ++ map T.toTitle rest)
 
 fieldTypeMapping :: Text ->  Text
 fieldTypeMapping "varchar(64)" = "Text sqltype=varchar(64)"
