@@ -1,5 +1,5 @@
 { stdenv, mkDerivation, base, ghc, stack, cabal-install, hspec, mysql-simple
-, persistent-template, persistent-mysql, persistent
+, persistent-template, persistent-mysql, persistent, parsec
 }:
 
 mkDerivation {
@@ -11,9 +11,11 @@ mkDerivation {
   buildTools = [ ghc stack cabal-install ];
   buildDepends = [
     base hspec mysql-simple persistent persistent-template persistent-mysql
+    parsec
   ];
   testDepends = [
     base hspec mysql-simple persistent persistent-template persistent-mysql
+    parsec
   ];
   homepage = "https://github.com/ryantm/persistent-entity-mirror";
   description = "In progress: a tool for generating persistent entities from an existing database.";
