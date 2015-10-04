@@ -84,8 +84,22 @@ fieldNameMapping t =
   T.concat ([T.toLower first] ++ map T.toTitle rest)
 
 fieldTypeMapping :: Text ->  Text
-fieldTypeMapping "varchar(64)" = "Text sqltype=varchar(64)"
-fieldTypeMapping "varchar(1024)" = "Text sqltype=varchar(1024)"
+fieldTypeMapping = fieldTypeNameBytesMapping . splitType
+
+fieldTypeNameBytesMapping :: (Text, Text) -> Text
+fieldTypeNameBytesMapping ("varchar", b) =
+  "Text sqltype=varchar(" `T.append` b `T.append` ")"
+fieldTypeNameBytesMapping ("bigint", b) =
+  "Int sqltype=bigint(" `T.append` b `T.append` ")"
+fieldTypeNameBytesMapping a = error (show a)
+
+splitType :: Text -> (Text, Text)
+splitType t =
+  let first:rest = T.splitOn "(" t in
+  if rest == [] then
+    (first, "")
+  else
+    (first, T.replace ")" "" (head rest))
 
 nullMapping :: Text -> Maybe Text -> [Text]
 nullMapping "YES" Nothing = ["Maybe default=Nothing"]
