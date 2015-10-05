@@ -127,7 +127,7 @@ statisticsEntityTemplate =
   \  seqInIndex Int sqltype=bigint(2) default=0\n\
   \  columnName Text sqltype=varchar(64)\n\
   \  collation Text sqltype=varchar(1) Maybe default=Nothing\n\
-  \  cardinality Int sqltype=bigint(20) Maybe default=Nothing\n\
+  \  cardinality Int sqltype=bigint(21) Maybe default=Nothing\n\
   \  subPart Int sqltype=bigint(3) Maybe default=Nothing\n\
   \  packed Text sqltype=varchar(10) Maybe default=Nothing\n\
   \  nullable Text sqltype=varchar(3)\n\

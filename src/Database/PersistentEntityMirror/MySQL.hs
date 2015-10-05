@@ -105,6 +105,12 @@ nullMapping :: Text -> Maybe Text -> [Text]
 nullMapping "YES" Nothing = ["Maybe default=Nothing"]
 nullMapping "NO" _ = []
 
+fieldDefaultMapping :: Maybe Text -> [Text]
+fieldDefaultMapping Nothing = []
+fieldDefaultMapping (Just "") = []
+fieldDefaultMapping (Just d) = ["default=" `T.append` d]
+
+
 descriptionToEntityTemplate :: Text -> -- ^ table name
                                [MySQLDescribe] -> -- ^ description of table fields
                                Text
@@ -117,4 +123,4 @@ descriptionToEntityTemplate tablename rows =
       "  " `T.append` T.unwords ([
           fieldNameMapping name
         , fieldTypeMapping fieldType
-        ] ++ nullMapping null fieldDefault)
+        ] ++ fieldDefaultMapping fieldDefault ++ nullMapping null fieldDefault)
