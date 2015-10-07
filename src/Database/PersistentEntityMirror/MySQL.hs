@@ -2,6 +2,8 @@
 
 module Database.PersistentEntityMirror.MySQL where
 
+import Database.PersistentEntityMirror.MySQLParse
+
 import qualified Data.ByteString as BS
 import           Data.ByteString.Builder
 import           Data.HashMap.Strict (HashMap)
@@ -84,7 +86,7 @@ fieldNameMapping t =
   T.concat ([T.toLower first] ++ map T.toTitle rest)
 
 fieldTypeMapping :: Text ->  Text
-fieldTypeMapping = fieldTypeNameBytesMapping . splitType
+fieldTypeMapping = fieldTypeNameBytesMapping . parseType
 
 fieldTypeNameBytesMapping :: (Text, Text) -> Text
 fieldTypeNameBytesMapping ("varchar", b) =
@@ -92,14 +94,6 @@ fieldTypeNameBytesMapping ("varchar", b) =
 fieldTypeNameBytesMapping ("bigint", b) =
   "Int sqltype=bigint(" `T.append` b `T.append` ")"
 fieldTypeNameBytesMapping a = error (show a)
-
-splitType :: Text -> (Text, Text)
-splitType t =
-  let first:rest = T.splitOn "(" t in
-  if rest == [] then
-    (first, "")
-  else
-    (first, T.replace ")" "" (head rest))
 
 nullMapping :: Text -> Maybe Text -> [Text]
 nullMapping "YES" Nothing = ["Maybe default=Nothing"]
