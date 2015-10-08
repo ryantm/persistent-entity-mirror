@@ -19,8 +19,13 @@ parseType t =
 mysqlTypeParser :: Parsec String () MySQLType
 mysqlTypeParser = do
   name <- many1 letter
+  bytes <- option "" mysqlTypeBytes
+  eof
+  return (MySQLType name bytes)
+
+mysqlTypeBytes :: Parsec String () String
+mysqlTypeBytes = do
   char '('
   bytes <- many1 digit
   char ')'
-  eof
-  return (MySQLType name bytes)
+  return bytes
