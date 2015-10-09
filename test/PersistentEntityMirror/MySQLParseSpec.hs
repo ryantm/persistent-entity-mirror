@@ -2,7 +2,7 @@
 
 module PersistentEntityMirror.MySQLParseSpec where
 
-
+import Control.Exception (evaluate)
 
 
 import Test.Hspec
@@ -16,4 +16,6 @@ spec = do
     it "should parse out the bytes" (do
       parseType "char(1)" `shouldBe` ("char","1"))
     specify "bytes are optional" (do
-      parseType "char" `shouldBe` ("char","")))
+      parseType "char" `shouldBe` ("char",""))
+    it "should not parse unmatched parens" (do
+      evaluate (parseType "bigint(5") `shouldThrow` anyException))

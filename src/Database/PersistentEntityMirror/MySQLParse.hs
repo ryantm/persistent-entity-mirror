@@ -12,8 +12,10 @@ data MySQLType = MySQLType String String
 
 parseType :: Text -> (Text, Text)
 parseType t =
-  let Right (MySQLType name bytes) = parse mysqlTypeParser "(source)" (T.unpack t) in
-  (T.pack name, T.pack bytes)
+  let parsed = parse mysqlTypeParser "(source)" (T.unpack t) in
+  case parsed of
+    Right (MySQLType name bytes) -> (T.pack name, T.pack bytes)
+    Left e -> error (show e)
 
 
 mysqlTypeParser :: Parsec String () MySQLType
