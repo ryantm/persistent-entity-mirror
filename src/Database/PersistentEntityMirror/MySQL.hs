@@ -88,11 +88,11 @@ fieldNameMapping t =
 fieldTypeMapping :: Text ->  Text
 fieldTypeMapping = fieldTypeNameBytesMapping . parseType
 
-fieldTypeNameBytesMapping :: (Text, Text) -> Text
+fieldTypeNameBytesMapping :: (Text, Int) -> Text
 fieldTypeNameBytesMapping ("varchar", b) =
-  "Text sqltype=varchar(" `T.append` b `T.append` ")"
+  "Text sqltype=varchar(" `T.append` T.pack (show b) `T.append` ")"
 fieldTypeNameBytesMapping ("bigint", b) =
-  "Int sqltype=bigint(" `T.append` b `T.append` ")"
+  "Int sqltype=bigint(" `T.append` T.pack (show b) `T.append` ")"
 fieldTypeNameBytesMapping a = error (show a)
 
 nullMapping :: Text -> Maybe Text -> [Text]
