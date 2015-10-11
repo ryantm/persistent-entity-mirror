@@ -36,13 +36,17 @@ parseType t =
 mysqlTypeParser :: Parsec String () MySQLTypeDescription
 mysqlTypeParser = do
   name <- many1 letter
-  bytes <- option 0 mysqlTypeBytes
+  (m, maybeD) <- option (0, Nothing) mysqlTypeBytes
   eof
-  return (MySQLTypeDescription {_type = T.pack name, _m = bytes })
+  return (MySQLTypeDescription {_type = T.pack name, _m = m })
 
-mysqlTypeBytes :: Parsec String () Int
+mysqlTypeBytes :: Parsec String () (Int, Maybe Int)
 mysqlTypeBytes = do
   char '('
-  bytes <- many1 digit
+  m <- many1 digit
+  d <- option Nothing (do
+                      char ','
+                      d' <- many1 digit
+                      return (Just d'))
   char ')'
-  return (read bytes)
+  return (read m, fmap read d)
