@@ -4,11 +4,13 @@
 
 module Database.PersistentEntityMirror.MySQLParse where
 
+import           Data.Char (toUpper)
 import           Data.Text (Text)
 import qualified Data.Text as T
 import           Text.Parsec
-import           Text.Parsec.Token
 import           Text.Parsec.Text
+import           Text.Parsec.Token
+import           Text.ParserCombinators.Parsec
 
 
 -- TODO: handle ENUM and SET types
@@ -37,8 +39,26 @@ mysqlTypeParser :: Parsec String () MySQLTypeDescription
 mysqlTypeParser = do
   name <- many1 letter
   (m, maybeD) <- option (0, Nothing) mysqlTypeBytes
+  unsigned <- unsignedThere
+  zerofill <- zerofillThere
   eof
   return (MySQLTypeDescription {_type = T.pack name, _m = m })
+
+unsignedThere :: Parsec String () Bool
+unsignedThere = do
+  u <- option "" (string " UNSIGNED")
+  case u of
+    "" -> return False
+    _ -> return True
+
+
+zerofillThere :: Parsec String () Bool
+zerofillThere = do
+  z <- option "" (string " ZEROFILL")
+  case z of
+    "" -> return False
+    _ -> return True
+
 
 mysqlTypeBytes :: Parsec String () (Int, Maybe Int)
 mysqlTypeBytes = do
