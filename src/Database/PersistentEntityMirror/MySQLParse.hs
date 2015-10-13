@@ -29,11 +29,12 @@ data MySQLTypeDescription = MySQLTypeDescription {
 
 parseType :: Text -> (Text, Int)
 parseType t =
-  let parsed = parse mysqlTypeParser "(source)" (T.unpack t) in
-  case parsed of
+  case parseMysqlType t of
     Right mType -> (_type mType, _m mType)
     Left e -> error (show e)
 
+parseMysqlType :: Text -> Either ParseError MySQLTypeDescription
+parseMysqlType t = parse mysqlTypeParser "(source)" (T.unpack t)
 
 mysqlTypeParser :: Parsec String () MySQLTypeDescription
 mysqlTypeParser = do
