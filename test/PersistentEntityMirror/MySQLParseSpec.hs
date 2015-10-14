@@ -13,16 +13,27 @@ import Database.PersistentEntityMirror.MySQLParse
 fromRight :: Either a b -> b
 fromRight (Right b) = b
 
-p :: MySQLTypeDescription
-p = fromRight (parseMysqlType "char(1)")
+
+p = fromRight . parseMysqlType
 
 spec :: Spec
 spec = do
   describe "parseMysqlType" (do
     it "should parse the type name" (do
-      (_type p) `shouldBe` "char")
+      (_type (p "char(1)")) `shouldBe` "char")
     it "should parse the m" (do
-      (_m p) `shouldBe` 1))
+      (_m (p "char(1)")) `shouldBe` 1)
+    it "should parse the d" (do
+      (_d (p "FLOAT(5,2)")) `shouldBe` 2)
+    it "should parse the unsigned and zerofill" (do
+      let t = "FLOAT(5,2) UNSIGNED ZEROFILL"
+      (_zerofill (p t)) `shouldBe` True
+      (_signed (p t)) `shouldBe` False)
+    it "should parse the lack of unsigned and zerofill" (do
+      let t = "FLOAT(5,2)"
+      (_zerofill (p t)) `shouldBe` False
+      (_signed (p t)) `shouldBe` True))
+
   describe "parseType" (do
     it "should parse out the bytes" (do
       parseType "char(1)" `shouldBe` ("char",1))

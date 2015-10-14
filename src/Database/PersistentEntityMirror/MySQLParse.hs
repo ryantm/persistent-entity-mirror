@@ -43,7 +43,14 @@ mysqlTypeParser = do
   unsigned <- unsignedThere
   zerofill <- zerofillThere
   eof
-  return (MySQLTypeDescription {_type = T.pack name, _m = m })
+  return (MySQLTypeDescription {
+                _type = T.pack name
+              , _m = m
+              , _d = (case maybeD of
+                        Nothing -> 0
+                        Just d -> d)
+              , _signed = not unsigned
+              , _zerofill = zerofill })
 
 unsignedThere :: Parsec String () Bool
 unsignedThere = do
