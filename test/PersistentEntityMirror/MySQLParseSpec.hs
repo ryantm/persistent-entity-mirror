@@ -14,7 +14,9 @@ fromRight :: Either a b -> b
 fromRight (Right b) = b
 
 
-p = fromRight . parseMysqlType
+p t = case parseMysqlType t of
+  Right mType -> mType
+  Left e -> error (show e)
 
 spec :: Spec
 spec = do
@@ -29,10 +31,18 @@ spec = do
       let t = "FLOAT(5,2) UNSIGNED ZEROFILL"
       (_zerofill (p t)) `shouldBe` True
       (_signed (p t)) `shouldBe` False)
+    it "should parse only unsigned" (do
+      let t = "FLOAT(5,2) UNSIGNED"
+      (_zerofill (p t)) `shouldBe` False
+      (_signed (p t)) `shouldBe` False)
     it "should parse the lack of unsigned and zerofill" (do
       let t = "FLOAT(5,2)"
       (_zerofill (p t)) `shouldBe` False
-      (_signed (p t)) `shouldBe` True))
+      (_signed (p t)) `shouldBe` True)
+    it "should parse character set" (do
+      let t = "char(1) CHARACTER SET utf8" -- COLLATE utf8_unicode_ci"
+      (_characterSet (p t)) `shouldBe` "utf8"))
+--      (_collate (p t)) `shouldBe` "utf8_unicode_ci"))
 
   describe "parseType" (do
     it "should parse out the bytes" (do

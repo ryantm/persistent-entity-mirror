@@ -10,7 +10,7 @@ import qualified Data.Text as T
 import           Text.Parsec
 import           Text.Parsec.Text
 import           Text.Parsec.Token
-import           Text.ParserCombinators.Parsec
+--import           Text.ParserCombinators.Parsec
 
 
 -- TODO: handle ENUM and SET types
@@ -40,8 +40,13 @@ mysqlTypeParser :: Parsec String () MySQLTypeDescription
 mysqlTypeParser = do
   name <- many1 letter
   (m, maybeD) <- option (0, Nothing) mysqlTypeBytes
-  unsigned <- unsignedThere
-  zerofill <- zerofillThere
+  try space
+  unsigned <- try unsignedThere
+  try space
+  zerofill <- try zerofillThere
+  try space
+  characterSet <- try characterSetThere
+  --collate <- collateThere
   eof
   return (MySQLTypeDescription {
                 _type = T.pack name
@@ -50,22 +55,34 @@ mysqlTypeParser = do
                         Nothing -> 0
                         Just d -> d)
               , _signed = not unsigned
-              , _zerofill = zerofill })
+              , _zerofill = zerofill
+              , _characterSet = T.pack characterSet })
 
 unsignedThere :: Parsec String () Bool
 unsignedThere = do
-  u <- option "" (string " UNSIGNED")
+  u <- option "" (string "UNSIGNED")
   case u of
     "" -> return False
     _ -> return True
 
-
 zerofillThere :: Parsec String () Bool
 zerofillThere = do
-  z <- option "" (string " ZEROFILL")
+  z <- option "" (string "ZEROFILL")
   case z of
     "" -> return False
     _ -> return True
+
+characterSetThere :: Parsec String () String
+characterSetThere = do
+  cs <- option "" (do
+    string "CHARACTER SET"
+    space
+    r <- many1 (noneOf " ")
+    return r)
+  case cs of
+    "" -> return ""
+    s -> return s
+
 
 
 mysqlTypeBytes :: Parsec String () (Int, Maybe Int)
